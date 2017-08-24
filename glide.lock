@@ -1,0 +1,6 @@
+hash: 1b8cb1511f71c95892bceca2f43a0119d502ad3e9ab827c374294aea8b0e17c7
+updated: 2017-08-24T11:05:35.682092982-07:00
+imports:
+- name: github.com/maxcnunes/httpfake
+  version: 1270fc9f6dc00de8afe93671667a3f79346199d6
+testImports: []

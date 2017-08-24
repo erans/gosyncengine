@@ -1,0 +1,4 @@
+package: github.com/erans/gosyncengine
+import:
+- package: github.com/maxcnunes/httpfake
+  version: ^1.0.0
