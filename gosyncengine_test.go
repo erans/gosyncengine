@@ -394,12 +394,83 @@ func TestGetMessageByIDBadUnmarshaling(t *testing.T) {
 }
 
 func TestGetThreadMessages(t *testing.T) {
-	baseURL := getEnvValue("SYNCENGINE_URL")
-	client := New(baseURL)
+	fakeService := httpfake.New()
+	defer fakeService.Server.Close()
+
+	fakeService.NewHandler().
+		Get("/messages/").
+		Reply(200).
+		BodyString(`[{
+        "account_id": "zzz",
+        "bcc": [],
+        "body": "<!DOCTYPE html>\n<html><head><body>Hello World</body></html>",
+        "cc": [],
+        "date": 1500437314,
+        "events": [],
+        "files": [],
+        "folder": {
+            "display_name": "All Mail"
+				},
+        "from": [
+            {
+                "email": "mail-noreply@somewhere.com",
+                "name": "Team"
+            }
+        ],
+        "id": "aaa1",
+        "object": "message",
+        "reply_to": [],
+        "snippet": "das djaskl djsakld jaskldj sadklasjdklasjdaklsdjaskl",
+        "starred": false,
+        "subject": "The best Email. Ever.",
+        "thread_id": "aaa",
+        "to": [
+            {
+                "email": "a@b.com",
+                "name": "a b"
+            }
+        ],
+        "unread": true
+    },
+		{
+        "account_id": "zzz",
+        "bcc": [],
+        "body": "<!DOCTYPE html>\n<html><head><body>Hello World</body></html>",
+        "cc": [],
+        "date": 1500437314,
+        "events": [],
+        "files": [],
+        "folder": {
+            "display_name": "All Mail"
+				},
+        "from": [
+            {
+                "email": "mail-noreply@somewhere.com",
+                "name": "Team"
+            }
+        ],
+        "id": "aaa2",
+        "object": "message",
+        "reply_to": [],
+        "snippet": "das djaskl djsakld jaskldj sadklasjdklasjdaklsdjaskl",
+        "starred": false,
+        "subject": "The best Email. Ever.",
+        "thread_id": "aaa",
+        "to": [
+            {
+                "email": "a@b.com",
+                "name": "a b"
+            }
+        ],
+        "unread": true
+    }
+		]`)
+
+	client := New(fakeService.ResolveURL(""))
 
 	var messages Messages
 	var err error
-	if messages, err = client.GetThreadMessages("5qro12wr9mojq8y9y8f6cdcp", "a28swc983tzc5ledvc3550glo"); err != nil {
+	if messages, err = client.GetThreadMessages("zzz", "aaa"); err != nil {
 		t.Error(err)
 	} else {
 		t.Logf("GetThreadMessages: %v", messages)
@@ -419,5 +490,18 @@ func TestGetThreadMessagesNot200(t *testing.T) {
 
 	if _, err := client.GetThreadMessages("aaa", "aaa"); err == nil {
 		t.Error(err)
+	}
+}
+
+func TestGetDeltaLatestCursor(t *testing.T) {
+	baseURL := getEnvValue("SYNCENGINE_URL")
+	client := New(baseURL)
+
+	var deltaCursor *DeltaCursor
+	var err error
+	if deltaCursor, err = client.GetDeltaLatestCursor("5qro12wr9mojq8y9y8f6cdcp"); err != nil {
+		t.Error(err)
+	} else {
+		t.Logf("Got DeltaCursor: %v", deltaCursor)
 	}
 }
