@@ -21,3 +21,8 @@ type Message struct {
 
 // Messages is a list of message object
 type Messages []Message
+
+// DeltaMessage providers the message struct given on a delta
+type DeltaMessage struct {
+	Attributes Message `json:"attributes"`
+}
